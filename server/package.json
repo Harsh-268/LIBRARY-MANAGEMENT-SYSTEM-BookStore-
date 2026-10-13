@@ -21,7 +21,6 @@
     "express-validator": "^7.3.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.1",
-    "nodemailer": "^10.0.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
