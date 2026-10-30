@@ -3,6 +3,7 @@
 A full-stack **MERN** library management system. Students can browse the catalogue, track their borrowed books and fines; administrators manage inventory, issue/return/renew books, handle users, and monitor the library through a dashboard.
 
 ---
+> **Status:** Production Ready (Iterating)
 
 ## ✨ Features
 
