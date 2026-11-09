@@ -62,7 +62,7 @@ export default function Login() {
         <svg height="48" aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="48" data-view-component="true" className="fill-[#24292f] mb-6">
         </svg>
         <h2 className="text-center text-[24px] font-light tracking-tight text-[#24292f]">
-          Sign in to LMS
+          Sign in to BookStore
         </h2>
       </div>
 
