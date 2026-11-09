@@ -22,7 +22,6 @@ import contactRoute from './routes/contact.routes.js';
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} request to ${req.url}`);
     
-    // You MUST call next() so the request continues down to your routes!
     next(); 
 });
 app.use('/api/v1/users', userRoute);

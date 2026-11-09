@@ -126,7 +126,7 @@ const addBookToLibrary = asyncHandler(async (req, res) => {
     const existingBook = await Book.findOne({ isbn });
     if (existingBook) {
         // throw new apiError(409, "Book with this ISBN already exists in the library");
-        // Instead of throwing an error, we can choose to update the existing book's stock
+        // Instead of throwing an error, we will update the stock of the existing book
         const updatedBook = await adjustStockInternal(existingBook._id, totalCopies || 1);
         if (!updatedBook) {
             throw new apiError(500, "Something went wrong while updating the existing book's stock");
