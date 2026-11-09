@@ -83,10 +83,10 @@ const AdminSidebar = ({open=false,onClose=()=>{}}) => {
     <aside className={`fixed inset-y-0 left-0 z-50 w-64 shrink-0 transform transition-transform duration-200
           lg:sticky lg:top-0 lg:translate-x-0 lg:z-auto
           ${open ? 'translate-x-0' : '-translate-x-full'}
-          border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex flex-col h-screen`}
+          border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex flex-col h-dvh`}
       >
       {/* Admin identity */}
-      <div className="px-5 py-6 border-b border-gray-100 dark:border-gray-800">
+      <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gray-900 dark:bg-gray-700 text-white flex items-center justify-center text-sm font-semibold">
             {initials}
@@ -102,7 +102,7 @@ const AdminSidebar = ({open=false,onClose=()=>{}}) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 min-h-0 overflow-y-auto px-3 py-3 space-y-0.5">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <NavLink key={to} to={to} className={linkClass}>
             <Icon />
@@ -112,7 +112,7 @@ const AdminSidebar = ({open=false,onClose=()=>{}}) => {
       </nav>
 
       {/* Theme toggle + Logout */}
-      <div className="px-3 py-4 border-t border-gray-100 dark:border-gray-800 space-y-1">
+      <div className="shrink-0 px-3 py-3 border-t border-gray-100 dark:border-gray-800 space-y-0.5">
         <ThemeToggle />
         <button
           onClick={handleLogout}

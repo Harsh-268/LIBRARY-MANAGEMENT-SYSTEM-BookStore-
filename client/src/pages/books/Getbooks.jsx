@@ -20,11 +20,16 @@ const BookCardSkeleton = () => (
   </div>
 );
 
+// 12 divides evenly into the 2, 3 and 4 column grids, so the last row is never ragged
+const PAGE_SIZE = 12;
+
 const Getbooks = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q");
   const category = searchParams.get("category");
+  const page = Math.max(1, parseInt(searchParams.get("page"), 10) || 1);
   const [books, setBooks] = useState([]);
+  const [metadata, setMetadata] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [failed, setFailed] = useState(false);
 
@@ -33,11 +38,12 @@ const Getbooks = () => {
       setIsLoading(true);
       setFailed(false);
       try {
-        const { books: rawBooks } = category
-          ? await getBooksByCategory(category)
+        const options = { page, limit: PAGE_SIZE };
+        const { books: rawBooks, metadata: meta } = category
+          ? await getBooksByCategory(category, options)
           : query
-            ? await searchLibraryBooks(query)
-            : await getAllBooks();
+            ? await searchLibraryBooks(query, options)
+            : await getAllBooks(options);
 
         const bookStats = rawBooks.map((book) => ({
           _id: book._id,
@@ -48,6 +54,7 @@ const Getbooks = () => {
           category: book.category,
         }));
         setBooks(bookStats);
+        setMetadata(meta);
       } catch (error) {
         console.error("Unable to get books,", error);
         setFailed(true);
@@ -56,7 +63,15 @@ const Getbooks = () => {
       }
     };
     getBooks();
-  }, [query, category]);
+  }, [query, category, page]);
+
+  const goToPage = (nextPage) => {
+    const params = new URLSearchParams(searchParams);
+    if (nextPage <= 1) params.delete("page");
+    else params.set("page", String(nextPage));
+    setSearchParams(params);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="min-h-full bg-gray-50 dark:bg-gray-950">
@@ -89,7 +104,7 @@ const Getbooks = () => {
           <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-500 dark:text-gray-400">
             {isLoading
               ? "Loading the collection..."
-              : `${books.length} book${books.length === 1 ? "" : "s"} found`}
+              : `${metadata?.totalItems ?? books.length} book${(metadata?.totalItems ?? books.length) === 1 ? "" : "s"} found`}
           </p>
         </div>
       </div>
@@ -107,17 +122,40 @@ const Getbooks = () => {
           </div>
         ) : isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
+            {Array.from({ length: PAGE_SIZE }).map((_, i) => (
               <BookCardSkeleton key={i} />
             ))}
           </div>
         ) : books.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
-            {" "}
-            {books.map((singleBook) => (
-              <BookCard key={singleBook._id} book={singleBook} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+              {books.map((singleBook) => (
+                <BookCard key={singleBook._id} book={singleBook} />
+              ))}
+            </div>
+
+            {metadata && metadata.totalPages > 1 && (
+              <div className="flex items-center justify-between mt-8">
+                <button
+                  disabled={!metadata.hasPrevPage}
+                  onClick={() => goToPage(page - 1)}
+                  className="text-sm px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800"
+                >
+                  Previous
+                </button>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  Page {metadata.currentPage} of {metadata.totalPages}
+                </span>
+                <button
+                  disabled={!metadata.hasNextPage}
+                  onClick={() => goToPage(page + 1)}
+                  className="text-sm px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center text-center py-20 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
