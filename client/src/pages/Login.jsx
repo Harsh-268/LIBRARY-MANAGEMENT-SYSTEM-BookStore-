@@ -130,7 +130,7 @@ export default function Login() {
 
        
         <div className="mt-4 py-4 px-4 border border-[#d0d7de] rounded-md text-center text-sm text-[#24292f]">
-          New to LMS?{' '}
+          New to BookStore?{' '}
           <Link to="/register" className="text-[#0969da] hover:underline">
             Create an account
           </Link>
